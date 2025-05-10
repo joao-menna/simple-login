@@ -1,0 +1,27 @@
+services:
+  database:
+    image: mysql:9.3
+    environment:
+      - MYSQL_DATABASE=login
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 3306:3306
+    networks:
+      - login_network
+
+  backend:
+    build:
+      context: ./packages/backend
+      dockerfile: Dockerfile
+    environment:
+      - DB_HOST=database
+      - DB_NAME=login
+      - DB_USER=root
+      - DB_PASS=root
+    ports:
+      - 8080:8080
+    networks:
+      - login_network
+
+networks:
+  login_network:
