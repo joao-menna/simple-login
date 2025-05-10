@@ -2,7 +2,7 @@ services:
   database:
     image: mysql:9.3
     environment:
-      - MYSQL_DATABASE=login
+      - MYSQL_DATABASE=loginvuln
       - MYSQL_ROOT_PASSWORD=root
     volumes:
       - login_database_data:/var/lib/mysql
@@ -17,7 +17,7 @@ services:
       dockerfile: ./packages/backendvuln/Dockerfile
     environment:
       - DB_HOST=database
-      - DB_NAME=login
+      - DB_NAME=loginvuln
       - DB_USER=root
       - DB_PASS=root
     ports:

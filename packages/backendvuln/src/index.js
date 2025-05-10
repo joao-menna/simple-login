@@ -147,7 +147,7 @@ server.post("/login", async (req, res) => {
   await conn.end();
 
   if (!user.length) {
-    res.redirect("/login?wrong=true")
+    res.redirect("/login?wrong-text=usuário ou senha inválidos")
     return;
   }
 
