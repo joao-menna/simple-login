@@ -4,6 +4,8 @@ services:
     environment:
       - MYSQL_DATABASE=login
       - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - login_database_data:/var/lib/mysql
     ports:
       - 3306:3306
     networks:
@@ -11,8 +13,8 @@ services:
 
   backendvuln:
     build:
-      context: ./packages/backendvuln
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./packages/backendvuln/Dockerfile
     environment:
       - DB_HOST=database
       - DB_NAME=login
@@ -22,6 +24,11 @@ services:
       - 8080:8080
     networks:
       - login_network
+
+
+volumes:
+  login_database_data:
+
 
 networks:
   login_network:

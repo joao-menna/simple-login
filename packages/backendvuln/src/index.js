@@ -1,9 +1,9 @@
 import express from "express";
 import dotenv from "dotenv";
 import mysql from "mysql2/promise";
-import { resolve } from "path";
+import { join, resolve } from "path";
 
-dotenv.config()
+dotenv.config();
 
 async function getConnection() {
   return await mysql.createConnection({
@@ -12,44 +12,69 @@ async function getConnection() {
     database: process.env.DB_NAME,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
-  })
+  });
 }
 
-const frontendPath = resolve(__dirname, "..", "..", "frontendvuln", "dist")
+const frontendPath = resolve(
+  import.meta.dirname,
+  "..",
+  "..",
+  "frontendvuln",
+  "dist"
+);
+const indexHtml = join(frontendPath, "index.html");
 
 const server = express();
 
-server.use(express.static(frontendPath))
+server.use(express.static(frontendPath));
 server.use(express.json());
 
-const USER_TABLE = "users"
+const USER_TABLE = "users";
+
+server.get("/my-account", async (_req, res) => {
+  res.sendFile(indexHtml);
+});
+
+server.get("/admin-panel", async (_req, res) => {
+  res.sendFile(indexHtml);
+});
+
+server.get("/login", async (_req, res) => {
+  res.sendFile(indexHtml);
+});
+
+server.get("/debug", async (_req, res) => {
+  res.sendFile(indexHtml);
+});
 
 server.get("/user", async (_req, res) => {
-  const conn = await getConnection()
+  const conn = await getConnection();
 
-  const [users] = await conn.query(`SELECT * FROM ${USER_TABLE}`)
+  const [users] = await conn.query(`SELECT * FROM ${USER_TABLE}`);
 
-  await conn.end()
+  await conn.end();
 
-  res.json(users)
+  res.json(users);
 });
 
 server.get("/user/:id", async (req, res) => {
-  const { id } = req.params
+  const { id } = req.params;
 
-  const conn = await getConnection()
+  const conn = await getConnection();
 
-  const [user] = await conn.query(`SELECT id, role, username FROM ${USER_TABLE} WHERE id = ${id} LIMIT 1`)
+  const [user] = await conn.query(
+    `SELECT id, role, username FROM ${USER_TABLE} WHERE id = ${id} LIMIT 1`
+  );
 
-  await conn.end()
+  await conn.end();
 
-  res.json(user[0])
+  res.json(user[0]);
 });
 
 server.post("/user", async (req, res) => {
-  const { role, username, password } = req.body
+  const { role, username, password } = req.body;
 
-  const conn = await getConnection()
+  const conn = await getConnection();
 
   await conn.query(`
     INSERT INTO ${USER_TABLE} (
@@ -61,20 +86,22 @@ server.post("/user", async (req, res) => {
       ${username},
       ${password}
     )
-  `)
+  `);
 
-  const [added_user] = await conn.query(`SELECT id, role, username FROM ${USER_TABLE} ORDER BY id DESC LIMIT 1`)
+  const [added_user] = await conn.query(
+    `SELECT id, role, username FROM ${USER_TABLE} ORDER BY id DESC LIMIT 1`
+  );
 
-  await conn.end()
+  await conn.end();
 
-  res.status(201).json(added_user[0])
+  res.status(201).json(added_user[0]);
 });
 
 server.put("/user/:id", async (req, res) => {
-  const { role, username, password } = req.body
-  const { id } = req.params
+  const { role, username, password } = req.body;
+  const { id } = req.params;
 
-  const conn = await getConnection()
+  const conn = await getConnection();
 
   await conn.query(`
     UPDATE ${USER_TABLE}
@@ -83,54 +110,53 @@ server.put("/user/:id", async (req, res) => {
       username = ${username},
       password = ${password}
     WHERE id = ${id}
-  `)
+  `);
 
-  await conn.end()
+  await conn.end();
 
-  res.status(204).json()
+  res.status(204).json();
 });
 
 server.delete("/user/:id", async (req, res) => {
-  const { id } = req.params
+  const { id } = req.params;
 
-  const conn = await getConnection()
+  const conn = await getConnection();
 
   await conn.query(`
     DELETE FROM ${USER_TABLE}
     WHERE id = ${id}
-  `)
+  `);
 
-  await conn.end()
+  await conn.end();
 
-  res.status(204).json()
+  res.status(204).json();
 });
 
 server.post("/login", async (req, res) => {
-  const { username, password } = req.body
+  const { username, password } = req.body;
 
-  const conn = await getConnection()
+  const conn = await getConnection();
 
   const [user] = await conn.query(`
     SELECT id, username
     FROM ${USER_TABLE}
     WHERE username = ${username} AND password = ${password}
     LIMIT 1
-  `)
+  `);
 
-  await conn.end()
+  await conn.end();
 
   if (!user.length) {
-    res.status(401).json()
+    res.redirect("/login?wrong=true")
     return;
   }
 
-  res.cookie("USERLOGGED", user[0].id)
+  res.cookie("USERLOGGED", user[0].id);
   if (user[0].role === "admin") {
-    res.redirect("admin-panel")
+    res.redirect("/admin-panel");
   }
 
-  res.redirect("/my-account")
+  res.redirect("/my-account");
 });
 
 server.listen(8080);
-
