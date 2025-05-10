@@ -9,9 +9,9 @@ services:
     networks:
       - login_network
 
-  backend:
+  backendvuln:
     build:
-      context: ./packages/backend
+      context: ./packages/backendvuln
       dockerfile: Dockerfile
     environment:
       - DB_HOST=database

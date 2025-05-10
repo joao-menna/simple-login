@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mysql from "mysql2/promise";
+import { resolve } from "path";
 
 dotenv.config()
 
@@ -14,9 +15,11 @@ async function getConnection() {
   })
 }
 
+const frontendPath = resolve(__dirname, "..", "..", "frontendvuln", "dist")
+
 const server = express();
 
-server.use(express.static("public"))
+server.use(express.static(frontendPath))
 server.use(express.json());
 
 const USER_TABLE = "users"
