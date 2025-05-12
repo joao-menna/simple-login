@@ -1,7 +1,8 @@
+import { join, resolve } from "path";
+import mysql from "mysql2/promise";
 import express from "express";
 import dotenv from "dotenv";
-import mysql from "mysql2/promise";
-import { join, resolve } from "path";
+import cors from "cors";
 
 dotenv.config();
 
@@ -20,12 +21,22 @@ const frontendPath = resolve(
   "..",
   "..",
   "frontendvuln",
-  "dist"
+  "dist",
 );
 const indexHtml = join(frontendPath, "index.html");
 
 const server = express();
 
+server.use(
+  cors({
+    origin: [
+      "http://localhost:8080",
+      "http://localhost:8081",
+      "http://localhost:5173",
+    ],
+    credentials: true,
+  }),
+);
 server.use(express.static(frontendPath));
 server.use(express.json());
 
@@ -63,7 +74,7 @@ server.get("/user/:id", async (req, res) => {
   const conn = await getConnection();
 
   const [user] = await conn.query(
-    `SELECT id, role, username FROM ${USER_TABLE} WHERE id = ${id} LIMIT 1`
+    `SELECT id, role, username FROM ${USER_TABLE} WHERE id = ${id} LIMIT 1`,
   );
 
   await conn.end();
@@ -89,7 +100,7 @@ server.post("/user", async (req, res) => {
   `);
 
   const [added_user] = await conn.query(
-    `SELECT id, role, username FROM ${USER_TABLE} ORDER BY id DESC LIMIT 1`
+    `SELECT id, role, username FROM ${USER_TABLE} ORDER BY id DESC LIMIT 1`,
   );
 
   await conn.end();
@@ -147,7 +158,7 @@ server.post("/login", async (req, res) => {
   await conn.end();
 
   if (!user.length) {
-    res.redirect("/login?wrong-text=usuário ou senha inválidos")
+    res.redirect("/login?wrong-text=usuário ou senha inválidos");
     return;
   }
 
@@ -159,4 +170,4 @@ server.post("/login", async (req, res) => {
   res.redirect("/my-account");
 });
 
-server.listen(8080);
+server.listen(8080, "0.0.0.0");
