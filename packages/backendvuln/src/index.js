@@ -170,4 +170,6 @@ server.post("/login", async (req, res) => {
   res.redirect("/my-account");
 });
 
-server.listen(8080, "0.0.0.0");
+server.listen(8080, "0.0.0.0", () => {
+  console.log("Started vulnerable server in :8080")
+});

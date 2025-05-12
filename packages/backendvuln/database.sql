@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS login;
+CREATE DATABASE IF NOT EXISTS loginvuln;
 
-USE login;
+USE loginvuln;
 
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -11,4 +11,3 @@ CREATE TABLE IF NOT EXISTS users (
 
 INSERT INTO users (role, username, password)
 VALUES ("admin", "admin", "admin");
-
