@@ -93,9 +93,9 @@ server.post("/user", async (req, res) => {
       username,
       password
     ) VALUES (
-      ${role},
-      ${username},
-      ${password}
+      "${role}",
+      "${username}",
+      "${password}"
     )
   `);
 
@@ -117,9 +117,9 @@ server.put("/user/:id", async (req, res) => {
   await conn.query(`
     UPDATE ${USER_TABLE}
     SET
-      role = ${role},
-      username = ${username},
-      password = ${password}
+      role = "${role}",
+      username = "${username}",
+      password = "${password}"
     WHERE id = ${id}
   `);
 
@@ -151,7 +151,7 @@ server.post("/login", async (req, res) => {
   const [user] = await conn.query(`
     SELECT id, username
     FROM ${USER_TABLE}
-    WHERE username = ${username} AND password = ${password}
+    WHERE username = "${username}" AND password = "${password}"
     LIMIT 1
   `);
 
