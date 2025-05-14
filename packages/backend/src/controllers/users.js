@@ -1,5 +1,5 @@
-import { getConnection } from "../helpers/getConnection";
-import { authMiddleware } from "../middlewares/auth";
+import { getConnection } from "../helpers/getConnection.js";
+import { authMiddleware } from "../middlewares/auth.js";
 import jsonwebtoken from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import e from "express";
