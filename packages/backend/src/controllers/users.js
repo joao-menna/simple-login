@@ -1,5 +1,6 @@
 import { getConnection } from "../helpers/getConnection.js";
 import { authMiddleware } from "../middlewares/auth.js";
+import { csrfProtection } from "../middlewares/csrf.js";
 import jsonwebtoken from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import e from "express";
@@ -112,7 +113,7 @@ export function usersRoutes(express) {
 
 
 
-  express.post("/register", async (req, res) => {
+  express.post("/register", csrfProtection, async (req, res) => {
     const { email, username, password } = req.body;
 
     if (!email || !username || !password) {
@@ -155,7 +156,7 @@ export function usersRoutes(express) {
 
 
 
-  express.post("/login", async (req, res) => {
+  express.post("/login", csrfProtection, async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
