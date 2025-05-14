@@ -1,4 +1,5 @@
 import { frontendPath, frontendRoutes } from "./controllers/frontend.js";
+import { csrfProtection } from "./middlewares/csrf.js";
 import { usersRoutes } from "./controllers/users.js";
 import cookieParser from "cookie-parser";
 import express from "express";
@@ -23,8 +24,9 @@ server.use(cookieParser());
 server.use(express.static(frontendPath));
 server.use(express.json());
 
-server.get("/csrf-token", async (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
+server.get("/csrf-token", csrfProtection, async (req, res) => {
+  res.cookie("CSRF-TOKEN", req.csrfToken());
+  res.send("CSRF-TOKEN in cookie.")
 });
 
 frontendRoutes(server)
