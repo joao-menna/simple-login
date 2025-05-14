@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import dotenv from "dotenv";
 import csurf from "csurf";
+import cors from "cors";
 
 dotenv.config();
 
