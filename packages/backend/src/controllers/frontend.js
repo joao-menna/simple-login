@@ -1,7 +1,7 @@
 import { join, resolve } from "path";
 import e from "express";
 
-const frontendPath = resolve(
+export const frontendPath = resolve(
   import.meta.dirname,
   "..",
   "..",

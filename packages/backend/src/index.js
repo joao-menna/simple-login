@@ -1,4 +1,4 @@
-import { frontendRoutes } from "./controllers/frontend.js";
+import { frontendPath, frontendRoutes } from "./controllers/frontend.js";
 import { usersRoutes } from "./controllers/users.js";
 import cookieParser from "cookie-parser";
 import express from "express";
