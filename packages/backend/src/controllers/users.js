@@ -17,7 +17,7 @@ export function usersRoutes(express) {
     const conn = await getConnection();
 
     try {
-      const [rows] = await conn.query(`SELECT * FROM ${USER_TABLE}`);
+      const [rows] = await conn.query(`SELECT id, email, username FROM ${USER_TABLE}`);
       res.json(rows);
     } catch (err) {
       console.error("Erro ao buscar usuários:", err);
