@@ -29,6 +29,7 @@ services:
       context: .
       dockerfile: ./packages/backend/Dockerfile
     environment:
+      - CSRF_SECRET=12kjh4kjh5kjg356jhg7hgf8hg9cfgjh
       - DB_HOST=database
       - DB_NAME=loginrein
       - DB_USER=root

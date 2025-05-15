@@ -30,6 +30,9 @@ Pré-requisitos:
 - Yarn (`npm i -g yarn`)
 
 Passo a passo:
+- Abra um terminal na pasta do front-end desejado (`./packages/frontendvuln` é o vulnerável, `./packages/frontend` é o reforçado)
+- Execute `yarn` para baixar as dependências
+- Faça o build do front-end com o comando `yarn build`
 - Abra um terminal na pasta do back-end desejado (`./packages/backendvuln` é o vulnerável, `./packages/backend` é o reforçado)
 - Execute `yarn` para baixar as dependências
 - Copie o `.env.example` para `.env`

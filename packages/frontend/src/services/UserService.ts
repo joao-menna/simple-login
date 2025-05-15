@@ -1,101 +1,111 @@
 import type { User } from "../interfaces/User";
-import { authService } from "./AuthService";
 
-const baseUrl = "http://localhost:8080";
-const REQUEST_TIMEOUT = 10000; 
-
-interface ApiError extends Error {
-  response: Response;
-}
+const baseUrl = "http://localhost:8081";
 
 class UserService {
-  private getAuthHeaders(): HeadersInit {
-    const token = authService.getToken();
-    return {
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-    };
-  }
+  async getCsrfToken() {
+    const response = await fetch(`${baseUrl}/csrf-token`, {
+      credentials: "include",
+    });
 
-  private async fetchWithTimeout(url: string, options: RequestInit = {}): Promise<Response> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
-
-    try {
-      const response = await fetch(url, {
-        ...options,
-        signal: controller.signal,
-        credentials: "include",
-        headers: {
-          ...this.getAuthHeaders(),
-          ...options.headers
-        }
-      });
-
-      if (!response.ok) {
-        const error = new Error('Request failed') as ApiError;
-        error.response = response;
-        throw error;
-      }
-
-      return response;
-    } finally {
-      clearTimeout(timeoutId);
-    }
+    return await response.json();
   }
 
   async getAll() {
-    const response = await this.fetchWithTimeout(`${baseUrl}/user`);
+    const response = await fetch(`${baseUrl}/users`, {
+      credentials: "include",
+    });
+
     return await response.json();
   }
 
   async getById(id: number) {
-    const response = await this.fetchWithTimeout(`${baseUrl}/user/${id}`);
-    return await response.json();
-  }
-
-  async insert(user: User) {
-    const response = await this.fetchWithTimeout(`${baseUrl}/user`, {
-      method: "POST",
-      body: JSON.stringify(user)
+    const response = await fetch(`${baseUrl}/users/${id}`, {
+      credentials: "include",
     });
+
     return await response.json();
   }
 
   async update(id: number, user: User) {
-    const response = await this.fetchWithTimeout(`${baseUrl}/user/${id}`, {
+    const response = await fetch(`${baseUrl}/users/${id}`, {
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
       method: "PUT",
-      body: JSON.stringify(user)
+      body: JSON.stringify(user),
     });
+
     return await response.json();
   }
 
   async delete(id: number) {
-    const response = await this.fetchWithTimeout(`${baseUrl}/user/${id}`, {
-      method: "DELETE"
+    const response = await fetch(`${baseUrl}/users/${id}`, {
+      credentials: "include",
+      method: "DELETE",
     });
+
     return await response.json();
   }
 
-  async login(username: string, password: string) {
-    const response = await this.fetchWithTimeout(`${baseUrl}/login`, {
+  async register(_csrfToken: string, user: User) {
+    const response = await fetch(`${baseUrl}/register`, {
+      credentials: "include",
       method: "POST",
-      body: JSON.stringify({
-        username,
-        password,
-      })
+      headers: {
+        "Content-Type": "application/json",
+        // "X-CSRF-Token": csrfToken,
+      },
+      body: JSON.stringify(user),
     });
 
-    const data = await response.json();
-    authService.setToken(data.token);
-    return data;
+    return await response.json();
   }
 
-  async logout() {
-    authService.clearToken();
+  async login(_csrfToken: string, email: string, password: string) {
+    const response = await fetch(`${baseUrl}/login`, {
+      credentials: "include",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // "X-CSRF-Token": csrfToken,
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
+
+    if (response.status !== 200) {
+      throw new Error("User not logged in");
+    }
+
+    return await response.json();
+  }
+
+  async isLogged() {
+    const response = await fetch(`${baseUrl}/logged`, {
+      credentials: "include",
+    });
+
+    if (response.status !== 200) {
+      throw new Error("User not logged in");
+    }
+
+    return await response.json();
+  }
+
+  async logOut() {
+    const response = await fetch(`${baseUrl}/logout`, {
+      credentials: "include",
+    });
+
+    if (response.status !== 200) {
+      throw new Error("User not logged in");
+    }
+
+    return await response.json();
   }
 }
 

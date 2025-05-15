@@ -17,7 +17,9 @@ export function usersRoutes(express) {
     const conn = await getConnection();
 
     try {
-      const [rows] = await conn.query(`SELECT id, email, username FROM ${USER_TABLE}`);
+      const [rows] = await conn.query(
+        `SELECT id, email, username FROM ${USER_TABLE}`
+      );
       res.json(rows);
     } catch (err) {
       console.error("Erro ao buscar usuários:", err);
@@ -26,8 +28,6 @@ export function usersRoutes(express) {
       await conn.end();
     }
   });
-
-
 
   express.get("/users/:id", async (req, res) => {
     const { id } = req.params;
@@ -52,8 +52,6 @@ export function usersRoutes(express) {
       await conn.end();
     }
   });
-
-
 
   express.put("/users/:id", authMiddleware, async (req, res) => {
     const { id } = req.params;
@@ -88,8 +86,6 @@ export function usersRoutes(express) {
     }
   });
 
-
-
   express.delete("/users/:id", authMiddleware, async (req, res) => {
     const { id } = req.params;
 
@@ -111,9 +107,7 @@ export function usersRoutes(express) {
     }
   });
 
-
-
-  express.post("/register", csrfProtection, async (req, res) => {
+  express.post("/register", async (req, res) => {
     const { email, username, password } = req.body;
 
     if (!email || !username || !password) {
@@ -140,12 +134,10 @@ export function usersRoutes(express) {
         [email, username, hashedPassword]
       );
 
-      res
-        .status(201)
-        .json({
-          message: "Usuário registrado com sucesso",
-          userId: result.insertId,
-        });
+      res.status(201).json({
+        message: "Usuário registrado com sucesso",
+        userId: result.insertId,
+      });
     } catch (err) {
       console.error("Erro ao registrar usuário:", err);
       res.status(500).json({ error: "Erro interno do servidor" });
@@ -154,9 +146,7 @@ export function usersRoutes(express) {
     }
   });
 
-
-
-  express.post("/login", csrfProtection, async (req, res) => {
+  express.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -201,5 +191,20 @@ export function usersRoutes(express) {
     } finally {
       await conn.end();
     }
+  });
+
+  express.get("/logged", authMiddleware, async (req, res) => {
+    return res.json(req.user);
+  });
+
+  express.get("/logout", authMiddleware, async (req, res) => {
+    res.cookie("token", "", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: false,
+      maxAge: 0,
+    });
+
+    res.json({ message: "logged out" });
   });
 }

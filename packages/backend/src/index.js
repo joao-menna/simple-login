@@ -20,16 +20,24 @@ server.use(
     credentials: true,
   })
 );
-server.use(cookieParser());
+server.use(cookieParser("secret"));
 server.use(express.static(frontendPath));
 server.use(express.json());
 
-server.get("/csrf-token", csrfProtection, async (req, res) => {
-  res.cookie("CSRF-TOKEN", req.csrfToken());
-  res.send("CSRF-TOKEN in cookie.")
+frontendRoutes(server)
+
+server.use(csrfProtection)
+
+server.get("/csrf-token", async (req, res) => {
+  const token = req.csrfToken()
+  res.cookie("_csrf", token, {
+    httpOnly: false,
+    secure: false,
+    sameSite: "strict",
+  })
+  res.send({ token })
 });
 
-frontendRoutes(server)
 usersRoutes(server)
 
 server.listen(8081, "0.0.0.0", () => {
