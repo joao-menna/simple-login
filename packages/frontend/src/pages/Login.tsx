@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { userService } from "../services/UserService";
+import { useNavigate } from "react-router-dom";
+import { useRef, useState } from "react";
+import DOMPurify from "dompurify";
 
 const inputClasses = `
   border-2 border-primary-200 rounded-lg p-1
@@ -20,7 +21,7 @@ export function LoginPage() {
       return;
     }
 
-    const email = emailInput.value;
+    const email = DOMPurify.sanitize(emailInput.value);
     const password = passwordInput.value;
 
     if (!email || !password) {

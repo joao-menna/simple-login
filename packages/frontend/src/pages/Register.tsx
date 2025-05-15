@@ -1,5 +1,6 @@
 import { userService } from "../services/UserService";
 import { useNavigate } from "react-router-dom";
+import DOMPurify from "dompurify";
 import { useRef } from "react";
 
 const inputClasses = `
@@ -21,8 +22,8 @@ export function RegisterPage() {
       return;
     }
 
-    const email = emailInput.value;
-    const username = usernameInput.value;
+    const email = DOMPurify.sanitize(emailInput.value);
+    const username = DOMPurify.sanitize(usernameInput.value);
     const password = passwordInput.value;
 
     if (!email || !username || !password) {

@@ -2,14 +2,16 @@ import { userService } from "../services/UserService";
 import type { User } from "../interfaces/User";
 import { useEffectOnce } from "react-use";
 import { useRef, useState } from "react";
-import { clsx } from "clsx/lite";
 import { Link } from "react-router-dom";
+import DOMPurify from "dompurify";
+import { clsx } from "clsx/lite";
 
 const inputClasses = `
   border-2 border-primary-200 rounded-lg p-1
 `;
 
 export function DashboardPage() {
+  const [editUserModalError, setEditUserModalError] = useState<string | null>();
   const [editUserModalOpen, setEditUserModalOpen] = useState<number | null>(
     null
   );
@@ -40,6 +42,7 @@ export function DashboardPage() {
   };
 
   const handleClickEditUser = async (user: User) => {
+    setEditUserModalError(null);
     setEditUserModalOpen(user.id ?? null);
 
     const emailInput = emailRef.current;
@@ -50,8 +53,8 @@ export function DashboardPage() {
       return;
     }
 
-    emailInput.value = user.email;
-    usernameInput.value = user.username;
+    emailInput.value = DOMPurify.sanitize(user.email);
+    usernameInput.value = DOMPurify.sanitize(user.username);
     passwordInput.value = "";
   };
 
@@ -63,16 +66,25 @@ export function DashboardPage() {
     if (!emailInput || !usernameInput || !passwordInput || !editUserModalOpen) {
       return;
     }
+    const email = DOMPurify.sanitize(emailInput.value);
+    const username = DOMPurify.sanitize(usernameInput.value);
+    const password = passwordInput.value;
+
+    if (!email || !username || !password) {
+      setEditUserModalError("E-mail, username and password can't be empty!");
+      return;
+    }
 
     await userService.update(editUserModalOpen, {
-      email: emailInput.value,
-      username: usernameInput.value,
-      password: passwordInput.value,
+      email,
+      username,
+      password,
     });
 
     emailInput.value = "";
     usernameInput.value = "";
 
+    setEditUserModalError(null);
     setEditUserModalOpen(null);
     await refreshUsers();
   };
@@ -124,6 +136,7 @@ export function DashboardPage() {
       <div className={clsx("flex flex-col gap-2 p-2")}>
         {users.map((user) => (
           <div
+            key={user.id}
             className={clsx(
               "bg-primary-300 rounded-lg flex flex-col gap-2 p-2"
             )}
@@ -168,6 +181,9 @@ export function DashboardPage() {
             >
               Close
             </button>
+            {editUserModalError && (
+              <span className="break-all w-48">{editUserModalError}</span>
+            )}
             <label className="flex flex-col">
               <span>E-mail</span>
               <input className={inputClasses} type="email" ref={emailRef} />

@@ -37,6 +37,10 @@ class UserService {
       body: JSON.stringify(user),
     });
 
+    if (response.status !== 200) {
+      throw new Error("User not logged in");
+    }
+
     return await response.json();
   }
 
@@ -45,6 +49,10 @@ class UserService {
       credentials: "include",
       method: "DELETE",
     });
+
+    if (response.status !== 200) {
+      throw new Error("User not logged in");
+    }
 
     return await response.json();
   }
@@ -59,6 +67,10 @@ class UserService {
       },
       body: JSON.stringify(user),
     });
+
+    if (response.status !== 200) {
+      throw new Error("Something went wrong");
+    }
 
     return await response.json();
   }
