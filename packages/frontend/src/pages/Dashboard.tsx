@@ -2,7 +2,7 @@ import { userService } from "../services/UserService";
 import type { User } from "../interfaces/User";
 import { useEffectOnce } from "react-use";
 import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import DOMPurify from "dompurify";
 import { clsx } from "clsx/lite";
 

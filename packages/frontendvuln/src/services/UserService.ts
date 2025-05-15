@@ -23,6 +23,9 @@ class UserService {
     const req = await fetch(`${baseUrl}/user`, {
       method: "POST",
       credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(user),
     });
 
@@ -33,6 +36,9 @@ class UserService {
     const req = await fetch(`${baseUrl}/user/${id}`, {
       method: "PUT",
       credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(user),
     });
 
@@ -51,6 +57,9 @@ class UserService {
   async login(username: string, password: string) {
     const req = await fetch(`${baseUrl}/login`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       credentials: "include",
       body: JSON.stringify({
         username,

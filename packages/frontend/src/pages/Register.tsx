@@ -1,5 +1,5 @@
 import { userService } from "../services/UserService";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import DOMPurify from "dompurify";
 import { useRef } from "react";
 

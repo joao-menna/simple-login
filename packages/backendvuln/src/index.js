@@ -42,19 +42,11 @@ server.use(express.json());
 
 const USER_TABLE = "users";
 
-server.get("/my-account", async (_req, res) => {
-  res.sendFile(indexHtml);
-});
-
-server.get("/admin-panel", async (_req, res) => {
+server.get("/dashboard", async (_req, res) => {
   res.sendFile(indexHtml);
 });
 
 server.get("/login", async (_req, res) => {
-  res.sendFile(indexHtml);
-});
-
-server.get("/debug", async (_req, res) => {
   res.sendFile(indexHtml);
 });
 
@@ -158,16 +150,12 @@ server.post("/login", async (req, res) => {
   await conn.end();
 
   if (!user.length) {
-    res.redirect("/login?wrong-text=usuário ou senha inválidos");
+    res.json({ redirect: "/login?wrong-text=usuário ou senha inválidos" });
     return;
   }
 
   res.cookie("USERLOGGED", user[0].id);
-  if (user[0].role === "admin") {
-    res.redirect("/admin-panel");
-  }
-
-  res.redirect("/my-account");
+  res.json({ message: "Logged in successfully"});
 });
 
 server.listen(8080, "0.0.0.0", () => {

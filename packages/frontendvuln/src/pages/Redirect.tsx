@@ -5,7 +5,7 @@ export function RedirectPage() {
   const navigate = useNavigate();
 
   useEffectOnce(() => {
-    navigate("/login");
+    navigate("/dashboard");
   });
 
   return <></>;
