@@ -2,6 +2,10 @@
 
 App with vulnerabilities for cybersecurity project 2
 
+# Documentação
+
+[Relatório de Testes de Segurança](https://docs.google.com/document/d/1uQDj3b1HHx5BNd5GMvwpszTPzo-YxvnFPx6MO1OoMfM/edit?usp=sharing)
+
 ## Como rodar (com Docker, recomendado)
 
 Pré-requisitos:
