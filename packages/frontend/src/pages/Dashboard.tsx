@@ -1,7 +1,7 @@
 import { userService } from "../services/UserService";
 import type { User } from "../interfaces/User";
 import { useEffectOnce } from "react-use";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import DOMPurify from "dompurify";
 import { clsx } from "clsx/lite";
@@ -12,9 +12,7 @@ const inputClasses = `
 
 export function DashboardPage() {
   const [editUserModalError, setEditUserModalError] = useState<string | null>();
-  const [editUserModalOpen, setEditUserModalOpen] = useState<number | null>(
-    null
-  );
+  const [editUserModalOpen, setEditUserModalOpen] = useState<User | null>(null);
   const [loggedUser, setLoggedUser] = useState<number | null>(null);
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -25,6 +23,20 @@ export function DashboardPage() {
     getIsUserLogged();
     refreshUsers();
   });
+
+  useEffect(() => {
+    const emailInput = emailRef.current;
+    const usernameInput = usernameRef.current;
+    const passwordInput = passwordRef.current;
+
+    if (!emailInput || !usernameInput || !passwordInput) {
+      return;
+    }
+
+    emailInput.value = DOMPurify.sanitize(editUserModalOpen?.email!);
+    usernameInput.value = DOMPurify.sanitize(editUserModalOpen?.username!);
+    passwordInput.value = "";
+  }, [editUserModalOpen]);
 
   const getIsUserLogged = async () => {
     try {
@@ -43,7 +55,7 @@ export function DashboardPage() {
 
   const handleClickEditUser = async (user: User) => {
     setEditUserModalError(null);
-    setEditUserModalOpen(user.id ?? null);
+    setEditUserModalOpen(user);
 
     const emailInput = emailRef.current;
     const usernameInput = usernameRef.current;
@@ -75,7 +87,7 @@ export function DashboardPage() {
       return;
     }
 
-    await userService.update(editUserModalOpen, {
+    await userService.update(editUserModalOpen.id!, {
       email,
       username,
       password,

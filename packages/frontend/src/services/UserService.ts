@@ -68,7 +68,7 @@ class UserService {
       body: JSON.stringify(user),
     });
 
-    if (response.status !== 200) {
+    if (response.status !== 201) {
       throw new Error("Something went wrong");
     }
 

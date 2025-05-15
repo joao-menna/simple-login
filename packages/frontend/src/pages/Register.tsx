@@ -1,19 +1,22 @@
 import { userService } from "../services/UserService";
 import { useNavigate } from "react-router";
 import DOMPurify from "dompurify";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 const inputClasses = `
   border-2 border-primary-200 rounded-lg p-1
 `;
 
 export function RegisterPage() {
+  const [error, setError] = useState<string>();
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
+    setError(undefined);
+
     const emailInput = emailRef.current;
     const usernameInput = usernameRef.current;
     const passwordInput = passwordRef.current;
@@ -30,11 +33,16 @@ export function RegisterPage() {
       return;
     }
 
-    await userService.register("", {
-      email,
-      username,
-      password,
-    });
+    try {
+      await userService.register("", {
+        email,
+        username,
+        password,
+      });
+    } catch {
+      setError("E-mail already being used");
+      return;
+    }
 
     navigate("/dashboard");
   };
@@ -42,6 +50,7 @@ export function RegisterPage() {
   return (
     <div className="fixed inset-0 size-full flex items-center justify-center">
       <div className="flex flex-col gap-2 items-center">
+        {!!error && <p>{error}</p>}
         <label className="flex flex-col">
           <span>E-mail</span>
           <input className={inputClasses} type="email" ref={emailRef} />
