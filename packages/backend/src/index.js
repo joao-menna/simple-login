@@ -1,9 +1,9 @@
 import { frontendPath, frontendRoutes } from "./controllers/frontend.js";
+import { csrfProtection } from "./middlewares/csrf.js";
 import { usersRoutes } from "./controllers/users.js";
 import cookieParser from "cookie-parser";
 import express from "express";
 import dotenv from "dotenv";
-import csurf from "csurf";
 import cors from "cors";
 
 dotenv.config();
@@ -24,18 +24,9 @@ server.use(cookieParser());
 server.use(express.static(frontendPath));
 server.use(express.json());
 
-const csrfProtection = csurf({
-  cookie: {
-    httpOnly: true,
-    secure: false,
-    sameSite: "strict",
-  },
-});
-
-server.use(csrfProtection);
-
-server.get("/csrf-token", async (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
+server.get("/csrf-token", csrfProtection, async (req, res) => {
+  res.cookie("CSRF-TOKEN", req.csrfToken());
+  res.send("CSRF-TOKEN in cookie.")
 });
 
 frontendRoutes(server)

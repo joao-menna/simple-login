@@ -36,3 +36,9 @@ Passo a passo:
 - Edite os conteúdos do `.env` para coincidir com seus dados, mantenha o DB_NAME como está
 - Entre no seu banco de dados e execute o script SQL `database.sql`
 - Execute o servidor com `yarn start`
+
+## Como testar - Postman (ou Hoppscotch Desktop)
+
+Na pasta `./docs/postman`, existe o arquivo de coleção exportado (`simple-login.postman_collection.json`) e o arquivo de ambiente (`simple-login.postman_environment.json`), importe os dois nos Postman (ou no Hoppscotch Desktop) e usufrua dos endpoints.
+
+Para fazer request para os endpoints `POST /register` e `POST /login` do backend reforçado, é necessário chamar a rota `GET /csrf-token` primeiro, pegar o `_csrf` dos cookies e colocar na variável do ambiente `csrfToken`.
